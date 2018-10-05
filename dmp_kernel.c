@@ -411,13 +411,14 @@ PUBLIC void proctab_dmp()
 /*===========================================================================*
  *				procmsgs_dmp   				     *
  *===========================================================================*/
+#if (CHIP == INTEL)
 PUBLIC void procmsgs_dmp()
 {
 /* Proc messages dump */
 
   register struct proc *rp;
   static struct proc *oldrp = BEG_PROC_ADDR;
-  int r;
+  int r, i;
   phys_clicks text, data, size;
 
   /* First obtain a fresh copy of the current process table. */
@@ -433,14 +434,13 @@ PUBLIC void procmsgs_dmp()
 	data = rp->p_memmap[D].mem_phys;
 	size = rp->p_memmap[T].mem_len
 		+ ((rp->p_memmap[S].mem_phys + rp->p_memmap[S].mem_len) - data);
-	for( int i = 0; i < NR_TASKS + NR_PROCS; i++ ){
-		printf("%4d  ",rp->messages_received[i]);
+	for( i = 0; i < NR_TASKS + NR_PROCS; i++ ){
+		printf("%d",rp->p_messages_received[i]);
 	}
-	printf("\n");
-	PRINTRTS(rp);
 	printf("\n");
   }
 }
+#endif				/* (CHIP == INTEL) */
 
 /*===========================================================================*
  *				procstack_dmp  				     *

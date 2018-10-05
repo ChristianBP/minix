@@ -609,7 +609,7 @@ PUBLIC int mini_send(
 	while (*xpp) xpp = &(*xpp)->p_q_link;	
 	*xpp = caller_ptr;			/* add caller to end */
 
-	caller_ptr->messages_received[dst_e]++;
+	caller_ptr->p_messages_received[_ENDPOINT_G(dst_e)]++;
 
 #if DEBUG_DUMPIPC
 	printmsgsend(&caller_ptr->p_sendmsg, caller_ptr, dst_ptr);

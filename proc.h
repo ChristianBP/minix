@@ -19,8 +19,6 @@
 #include "priv.h"
 
 struct proc {
-  int messages_received[NR_TASKS + NR_PROCS];	/* counts how many messages have been sent from every other process */
-
   struct stackframe_s p_reg;	/* process' registers saved in stack frame */
   struct fpu_state_s p_fpu_state;	/* process' fpu_regs saved lazily */
   struct segframe p_seg;	/* segment descriptors */
@@ -111,6 +109,7 @@ struct proc {
 #if DEBUG_TRACE
   int p_schedules;
 #endif
+  int p_messages_received[NR_TASKS + NR_PROCS];
 };
 
 #endif /* __ASSEMBLY__ */
