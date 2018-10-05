@@ -411,9 +411,9 @@ PUBLIC void proctab_dmp()
 /*===========================================================================*
  *				procmsgs_dmp   				     *
  *===========================================================================*/
-PUBLIC void proctab_dmp()
+PUBLIC void procmsgs_dmp()
 {
-/* Proc table dump */
+/* Proc messages dump */
 
   register struct proc *rp;
   static struct proc *oldrp = BEG_PROC_ADDR;
