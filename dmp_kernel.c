@@ -37,6 +37,13 @@ static int pagelines;
 	  else if (proc_nr(rp) < 0) 	printf("[%2d] ", proc_nr(rp)); 	\
 	  else 				printf(" %2d  ", proc_nr(rp));
 
+#define my_PROCLOOP(rp, oldrp) \
+	pagelines = 0; \
+	for (rp = oldrp; rp < END_PROC_ADDR; rp++) { \
+	  oldrp = BEG_PROC_ADDR; \
+	  if (isemptyp(rp)) continue; \
+	  if (++pagelines > LINES) { oldrp = rp; printf("--more--\n"); break; }\
+
 #define click_to_round_k(n) \
 	((unsigned) ((((unsigned long) (n) << CLICK_SHIFT) + 512) / 1024))
 
@@ -418,8 +425,7 @@ PUBLIC void procmsgs_dmp()
 
   register struct proc *rp;
   static struct proc *oldrp = BEG_PROC_ADDR;
-  int r, i;
-  phys_clicks text, data, size;
+  int r, i, sentMessages;
 
   /* First obtain a fresh copy of the current process table. */
   if ((r = sys_getproctab(proc)) != OK) {
@@ -427,17 +433,28 @@ PUBLIC void procmsgs_dmp()
       return;
   }
 
-  printf("\n-nr-----gen---endpoint-name--- -prior-quant- -user----sys-rtsflags-from/to-\n");
-
+  printf("pid  ");
+  oldrp = BEG_PROC_ADDR; \
   PROCLOOP(rp, oldrp)
-	text = rp->p_memmap[T].mem_phys;
-	data = rp->p_memmap[D].mem_phys;
-	size = rp->p_memmap[T].mem_len
-		+ ((rp->p_memmap[S].mem_phys + rp->p_memmap[S].mem_len) - data);
-	for( i = 0; i < NR_TASKS + NR_PROCS; i++ ){
-		printf("%d",rp->p_messages_received[i]);
+  	if( proc_nr(rp) > 9 ){
+		break;
 	}
-	printf("\n");
+  }
+  printf("\n");
+  my_PROCLOOP(rp, oldrp)
+  	sentMessages=0;
+  	for( i = 0; i < 14; i++ ){
+		if(rp->p_messages_received[i] != 0){
+			sentMessages=1;
+		}
+	}
+	if( sentMessages == 1 ){
+  		printf("%-8.8s ",rp->p_name);
+		for( i = 0; i < 14; i++ ){
+			printf("%-4d ",rp->p_messages_received[i]);
+		}
+		printf("\n");
+	}
   }
 }
 #endif				/* (CHIP == INTEL) */
